@@ -385,7 +385,7 @@ with col1:
 with col2:
     st.markdown("<div class='section-header'>📊 System Analytics</div>", unsafe_allow_html=True)
     
-    # 1. Age Distribution Histogram
+    # 1. Age Distribution (Overlaid & Normalized)
     df_plot = df.copy()
     df_plot["diabetes"] = df_plot["diabetes"].map({
         0: "0 (No / Non-Diabetic)",
@@ -397,9 +397,12 @@ with col2:
         x="age",
         color="diabetes",
         nbins=30,
-        title="Age Distribution by Diagnosis",
+        barmode="overlay",
+        histnorm="percent",
+        title="Age Distribution Trends",
         color_discrete_map={"0 (No / Non-Diabetic)": "#06b6d4", "1 (Yes / Diabetic)": "#ef4444"},
-        labels={"age": "Age", "count": "Frequency", "diabetes": "Diabetes Status"}
+        labels={"age": "Age", "diabetes": "Status"},
+        opacity=0.75
     )
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
@@ -408,35 +411,35 @@ with col2:
         title_font_family="Outfit",
         title_font_color="#38bdf8",
         title_font_size=18,
-        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99)
+        legend=dict(yanchor="top", y=0.99, xanchor="right", x=0.99),
+        yaxis_title="Percentage (%)"
     )
     fig.update_xaxes(showgrid=False)
     fig.update_yaxes(showgrid=False)
     st.plotly_chart(fig, use_container_width=True)
     
-    # 2. Diabetes Distribution Pie Chart
-    diabetes_counts = df["diabetes"].value_counts()
-    
-    pie_fig = go.Figure(
-        data=[
-            go.Pie(
-                labels=["0 (No / Non-Diabetic)", "1 (Yes / Diabetic)"],
-                values=[diabetes_counts.get(0, 0), diabetes_counts.get(1, 0)],
-                hole=0.5,
-                marker=dict(colors=["#06b6d4", "#ef4444"])
-            )
-        ]
+    # 2. Blood Glucose Level Box Plot
+    fig2 = px.box(
+        df_plot,
+        x="diabetes",
+        y="blood_glucose_level",
+        color="diabetes",
+        title="Glucose Level by Diagnosis",
+        color_discrete_map={"0 (No / Non-Diabetic)": "#06b6d4", "1 (Yes / Diabetic)": "#ef4444"},
+        labels={"diabetes": "Diagnosis", "blood_glucose_level": "Glucose Level (mg/dL)"}
     )
-    pie_fig.update_layout(
-        title="Diabetes Diagnosis Distribution",
+    fig2.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font_color="#cbd5e1",
         title_font_family="Outfit",
         title_font_color="#38bdf8",
-        title_font_size=18
+        title_font_size=18,
+        showlegend=False
     )
-    st.plotly_chart(pie_fig, use_container_width=True)
+    fig2.update_xaxes(showgrid=False)
+    fig2.update_yaxes(showgrid=False)
+    st.plotly_chart(fig2, use_container_width=True)
 
 # ==========================================
 # PREDICTION ENGINE & SUGGESTIONS
