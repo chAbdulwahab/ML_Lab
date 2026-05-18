@@ -43,8 +43,7 @@ st.markdown(
         color: white !important;
     }
     
-    /* Hide default Streamlit header and footer */
-    header {visibility: hidden;}
+    /* Hide default Streamlit footer */
     footer {visibility: hidden;}
     
     /* Layout Elements */
