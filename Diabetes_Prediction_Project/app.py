@@ -11,6 +11,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.metrics import accuracy_score
 import time
+import os
 
 # ==========================================
 # PAGE CONFIGURATION & METADATA
@@ -171,7 +172,9 @@ st.markdown(
 # ==========================================
 @st.cache_data
 def load_data():
-    df = pd.read_csv("diabetes_prediction_dataset.csv")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, "diabetes_prediction_dataset.csv")
+    df = pd.read_csv(file_path)
     return df
 
 @st.cache_resource
@@ -228,12 +231,13 @@ def train_and_persist_all_models(df):
     knn_acc = accuracy_score(y_test, knn_pred)
     
     # Programmatically persist the primary models to disk (ensures exact folder tree compliance)
-    joblib.dump(rf_model, "model.pkl")
-    joblib.dump(scaler, "scaler.pkl")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    joblib.dump(rf_model, os.path.join(current_dir, "model.pkl"))
+    joblib.dump(scaler, os.path.join(current_dir, "scaler.pkl"))
     
     # Save the secondary models for diagnostic completeness
-    joblib.dump(lr_model, "logistic_model.pkl")
-    joblib.dump(knn_model, "knn_model.pkl")
+    joblib.dump(lr_model, os.path.join(current_dir, "logistic_model.pkl"))
+    joblib.dump(knn_model, os.path.join(current_dir, "knn_model.pkl"))
     
     models = {
         "Random Forest": (rf_model, rf_acc),
